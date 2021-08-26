@@ -1,0 +1,21 @@
+service: test-queen
+useDotenv: true
+
+plugins:
+  - serverless-offline
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: 20201221
+  memorySize: 512
+  timeout: 15
+  stage: production
+  region: us-west-1
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - http: ANY /{proxy+}
+      - http: ANY /
