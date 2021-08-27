@@ -6,16 +6,16 @@ const TABLE_NAME = 'usersapi'
 
 exports.signup = async (req, res) => {
   const { email, password } = req.body
+
   const params = {
     TableName: TABLE_NAME,
+    Key: { email },
   }
 
-  const { Items } = await dynamoClient.scan(params).promise()
+  const { Item } = await dynamoClient.get(params).promise()
 
-  if (Items.find((user) => user.email === email)) {
-    console.log('Email already in used')
-    return res.status(401).json({ message: 'Email already in used' })
-  }
+  if (Item) return res.status(401).json({ message: 'Email already in used' })
+
   const hashed = await bcrypt.hash(
     password,
     parseInt(process.env.BCRYPT_SALT_ROUNDS),
@@ -24,12 +24,12 @@ exports.signup = async (req, res) => {
   try {
     const user = await dynamoClient
       .put({
-        ...params,
+        TableName: TABLE_NAME,
         Item: { email, password: hashed },
       })
       .promise()
-    const token = createToken(user)
     console.log('SUCCESS: adding new user')
+    const token = createToken(user)
     return res.status(200).json({ email, token })
   } catch (err) {
     console.log('FAILED: adding new user')
@@ -41,21 +41,21 @@ exports.login = async (req, res) => {
   const { email, password } = req.body
   const params = {
     TableName: TABLE_NAME,
+    Key: { email },
   }
 
-  const { Items } = await dynamoClient.scan(params).promise()
-  const user = Items.filter((user) => user.email === email)[0]
+  const { Item } = await dynamoClient.get(params).promise()
 
-  if (!user) {
+  if (!Item) {
     return res.status(401).json({ message: 'Invalid user or password' })
   }
 
-  const isValidPassword = await bcrypt.compare(password, user.password)
+  const isValidPassword = await bcrypt.compare(password, Item.password)
   if (!isValidPassword)
     return res.status(401).json({ message: 'Invalid user or password' })
 
-  console.log('LOGIN: ', user.email)
-  const token = createToken(user)
+  console.log('LOGIN: ', Item.email)
+  const token = createToken(Item)
   res.status(200).json({ email, token })
 }
 
