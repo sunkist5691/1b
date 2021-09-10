@@ -14,7 +14,7 @@ app.use('/users', usersRoutes)
 app.use('/sayhello', sayhelloRouter)
 
 app.listen(process.env.PORT, async () => {
-  console.log(`Sever is running on port ${process.env.PORT}`)
+  console.log(`Server is running on port ${process.env.PORT}`)
   console.log(
     '<--------------------Database is Connected!--------------------->',
   )
