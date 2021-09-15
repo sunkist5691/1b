@@ -18,11 +18,11 @@ exports.getAllJobs = async (req, res) => {
 }
 
 exports.getJob = async (req, res) => {
-  const { id } = req.params
+  const { userId } = req.params
   const params = {
     TableName: TABLE_NAME,
     Key: {
-      userId: id,
+      userId,
     },
   }
   try {

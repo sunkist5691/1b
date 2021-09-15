@@ -10,7 +10,7 @@ const {
 } = require('../controller/jobs')
 
 router.get('/', getAllJobs)
-router.get('/:id', getJob)
+router.get('/:userId', getJob)
 router.post('/', authCheck, addJob)
 router.put('/', authCheck, editJob)
 router.delete('/:id', authCheck, deleteJob)
