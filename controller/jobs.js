@@ -9,6 +9,8 @@ exports.getAllJobs = async (req, res) => {
 
   try {
     const { Items } = await dynamoClient.scan(params).promise()
+
+    if (!Items) throw new SyntaxError('undefined / none of the job post exist')
     console.log('SUCCESS: get all job')
     return res.status(200).json(Items)
   } catch (err) {
@@ -27,6 +29,7 @@ exports.getJob = async (req, res) => {
   }
   try {
     const { Item } = await dynamoClient.get(params).promise()
+    if (!Item) throw new SyntaxError('undefined / employer need to post a job')
     console.log('SUCCESS: get a job')
     return res.status(200).json(Item)
   } catch (err) {

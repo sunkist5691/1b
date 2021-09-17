@@ -5,6 +5,7 @@ const morgan = require('morgan')
 const sayhelloRouter = require('./sayhello')
 const usersRoutes = require('./routes/users')
 const jobsRoutes = require('./routes/jobs')
+const profilesRoutes = require('./routes/profiles')
 const app = express()
 
 app.use(morgan('tiny'))
@@ -12,6 +13,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/users', usersRoutes)
+app.use('/profiles', profilesRoutes)
 app.use('/jobs', jobsRoutes)
 app.use('/sayhello', sayhelloRouter)
 

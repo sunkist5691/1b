@@ -39,7 +39,7 @@ exports.currentUser = async (req, res) => {
   const { Item } = await dynamoClient.get(params).promise()
 
   if (!Item) return res.status(401).json({ message: 'Invalid user' })
-  console.log('ITEM @@@@@: ', Item)
+
   res.status(200).json(Item)
 }
 
