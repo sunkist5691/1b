@@ -63,6 +63,32 @@ exports.addProfile = async (req, res) => {
   }
 }
 
+exports.addApplied = async (req, res) => {
+  const { candidateId } = req.params
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      candidateId,
+    },
+  }
+
+  const { Item } = await dynamoClient.get(params).promise()
+
+  try {
+    const added = await dynamoClient
+      .put({
+        TableName: TABLE_NAME,
+        Item: { ...Item, applied: [...Item.applied, { ...req.body }] },
+      })
+      .promise()
+
+    return res.status(200).json(added)
+  } catch (err) {
+    console.log('FAILED: applied')
+    return res.status(500).json(err, { message: 'Failed to applied' })
+  }
+}
+
 exports.editProfile = async (req, res) => {
   try {
     await dynamoClient

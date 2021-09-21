@@ -63,6 +63,32 @@ exports.addJob = async (req, res) => {
   }
 }
 
+exports.addApplicant = async (req, res) => {
+  const { userId } = req.params
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      userId,
+    },
+  }
+  console.log('*****ready?', req.body)
+  const { Item } = await dynamoClient.get(params).promise()
+  console.log('****ADD APPLICANT****', Item, req.body)
+  try {
+    const added = await dynamoClient
+      .put({
+        TableName: TABLE_NAME,
+        Item: { ...Item, applicants: [...Item.applicants, { ...req.body }] },
+      })
+      .promise()
+
+    return res.status(200).json(added)
+  } catch (err) {
+    console.log('FAILED: applied')
+    return res.status(500).json(err, { message: 'Failed to applied' })
+  }
+}
+
 exports.editJob = async (req, res) => {
   try {
     await dynamoClient
@@ -80,11 +106,11 @@ exports.editJob = async (req, res) => {
 }
 
 exports.deleteJob = async (req, res) => {
-  const { id } = req.params
+  const { userId } = req.params
   const params = {
     TableName: TABLE_NAME,
     Key: {
-      userId: id,
+      userId,
     },
   }
   try {
