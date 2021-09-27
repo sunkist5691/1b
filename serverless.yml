@@ -1,4 +1,4 @@
-service: test-queen
+service: poke-func
 useDotenv: true
 
 plugins:
