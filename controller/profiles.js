@@ -89,6 +89,38 @@ exports.addApplied = async (req, res) => {
   }
 }
 
+exports.editApplied = async (req, res) => {
+  const { candidateId } = req.params
+  const params = {
+    TableName: TABLE_NAME,
+    Key: {
+      candidateId,
+    },
+  }
+  console.log('@@@BLOB@@@', req.body)
+  const { Item } = await dynamoClient.get(params).promise()
+
+  try {
+    const editedApplied = Item.applied.map((eachApplied) => {
+      if (eachApplied.userId === req.body.userId) {
+        return req.body
+      }
+      return eachApplied
+    })
+    const edited = await dynamoClient
+      .put({
+        TableName: TABLE_NAME,
+        Item: { ...Item, applied: editedApplied },
+      })
+      .promise()
+
+    return res.status(200).json(edited)
+  } catch (err) {
+    console.log('FAILED: edited')
+    return res.status(500).json(err, { message: 'Failed to edited' })
+  }
+}
+
 exports.editProfile = async (req, res) => {
   try {
     await dynamoClient
